@@ -3,13 +3,14 @@
 Author Lingfengyu
 Date 2024-07-21 10:35
 LastEditors Lingfengyu
-LastEditTime 2024-07-23 22:32
+LastEditTime 2024-07-24 13:49
 Description 
 Feature 
 """
 
 import asyncio
 import base64
+import binascii
 from curses import echo
 import json
 import os
@@ -38,8 +39,14 @@ async def handler(websocket):
     """
     async for message in websocket:
         rec = json.loads(message)
-        with open("image/image.jpg", "wb") as image_file:
-            image_file.write(base64.b64decode(rec["image"]))
+        if 'image' in rec:
+            try:
+                with open("image/image.jpg", "wb") as image_file:
+                    image_file.write(base64.b64decode(rec["image"]))
+            except (binascii.Error, ValueError):
+                await call_result(websocket, "400", "", "", "Bad request.")
+        else:
+            await call_result(websocket, "400", "", "", "Bad request.")
         char, score = test_model()
         if char == -1 and score == -1:
             await call_result(websocket, "500", "", "", "An error occured.")
