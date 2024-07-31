@@ -3,7 +3,7 @@
 Author Lingfengyu
 Date 2024-07-21 10:35
 LastEditors Lingfengyu
-LastEditTime 2024-07-31 13:35
+LastEditTime 2024-07-31 17:11
 Description 
 Feature 
 """
@@ -41,7 +41,7 @@ async def handler(websocket):
     """
     async for message in websocket:
         rec = json.loads(message)
-        log.info(f"{websocket.remote_address[0]} - Connection receive:{rec}")
+        # log.info(f"{websocket.remote_address[0]} - Connection receive:{rec}")
         if 'image' in rec:
             try:
                 with open("image/image.jpg", "wb") as image_file:
