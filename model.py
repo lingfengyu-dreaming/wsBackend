@@ -2,7 +2,7 @@
 Author Lingfengyu
 Date 2024-07-21 11:25
 LastEditors Lingfengyu
-LastEditTime 2024-07-21 18:05
+LastEditTime 2024-07-31 12:57
 Description 
 Feature 
 """
@@ -509,7 +509,7 @@ def test_model():
         # params = filter(lambda p: p.requires_grad, model.parameters())
         # criterion = nn.CrossEntropyLoss()
         # optimizer = optim.Adam(params, lr, weight_decay=1e-4)
-        model.load_state_dict(torch.load(f'model/model.pt', map_location=torch.device('cpu')))
+        model.load_state_dict(torch.load(f'model/model.pt', map_location=torch.device(device), weights_only=False))
         model.eval()
     except:
         return -1, -1
