@@ -3,7 +3,7 @@
 Author Lingfengyu
 Date 2024-07-21 10:35
 LastEditors Lingfengyu
-LastEditTime 2024-07-31 13:06
+LastEditTime 2024-07-31 13:35
 Description 
 Feature 
 """
@@ -15,6 +15,7 @@ import binascii
 import json
 import logging
 import os
+import shutil
 import websockets
 
 from model import test_model
@@ -87,14 +88,22 @@ async def echo(websocket):
         await websocket.close()
 
 async def main():
-    async with websockets.serve(echo, "", 26451):
+    async with websockets.serve(echo, "", 26451, logger=log):
         await asyncio.Future()  # run forever
 
 if __name__ == "__main__":
+    # 备份日志文件
+    if os.path.exists("log/"):
+        if os.path.exists("log/current.log"):
+            shutil.copyfile("log/current.log", "log/last.log")
+        open("log/current.log", "w", encoding="UTF-8")
+    else:
+        os.mkdir("log/")
+        open("log/current.log", 'w', encoding="UTF-8")
     # 输出日志
     log = logging.getLogger("ws")
     log.setLevel(logging.INFO)
-    file_handler = logging.FileHandler("./log/websocket.log")
+    file_handler = logging.FileHandler("log/current.log")
     file_handler.setLevel(logging.INFO)
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)
@@ -111,10 +120,14 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
+        log.error("User manually exit.")
         print("User manually exit.")
     except ConnectionError:
+        log.error("Connection error.")
         print("Remote user closed a connection unexcepted.")
     except websockets.exceptions.ConnectionClosedError():
+        log.error("Websockets Connection Closed Error.")
         print("Remote connection shutdown without closed.")
     except websockets.exceptions.ConnectionClosedOK():
+        log.error("Websocket Connection Closed OK.")
         print("Remote connection close OK.")
