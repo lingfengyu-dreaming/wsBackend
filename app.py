@@ -3,7 +3,7 @@
 Author Lingfengyu
 Date 2024-07-21 10:35
 LastEditors Lingfengyu
-LastEditTime 2024-08-01 23:53
+LastEditTime 2024-08-02 00:24
 Description 
 Feature 
 """
@@ -135,13 +135,24 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         log.error("User manually exit.")
-        print("User manually exit.")
-    except ConnectionError:
+        print("User manually exit. Everything OK.")
+    except ConnectionError as e:
+        log.warn(type(e).__name__)
         log.error("Connection error.")
         print("Remote user closed a connection unexcepted.")
-    except websockets.exceptions.ConnectionClosedError():
+    except websockets.exceptions.ConnectionClosedError() as e:
+        log.warn(type(e).__name__)
         log.error("Websockets Connection Closed Error.")
         print("Remote connection shutdown without closed.")
-    except websockets.exceptions.ConnectionClosedOK():
+    except websockets.exceptions.ConnectionClosedOK() as e:
+        log.warn(type(e).__name__)
         log.error("Websocket Connection Closed OK.")
         print("Remote connection close OK.")
+    except asyncio.exceptions.IncompleteReadError() as e:
+        log.warn(type(e).__name__)
+        log.error("Connection closed without receiving or sending a close frame.")
+        print("Connection closed without receiving or sending a close frame.")
+    except json.decoder.JSONDecodeError() as e:
+        log.warn(type(e).__name__)
+        log.error("Decode JSON from received message error. May caused by Internal Error.")
+        print("Decode JSON from received message error.")
