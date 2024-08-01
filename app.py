@@ -3,7 +3,7 @@
 Author Lingfengyu
 Date 2024-07-21 10:35
 LastEditors Lingfengyu
-LastEditTime 2024-07-31 17:11
+LastEditTime 2024-08-01 23:53
 Description 
 Feature 
 """
@@ -56,9 +56,23 @@ async def handler(websocket):
             await websocket.close()
         char, score = test_model()
         print(f"Char:{char}, Score:{score}")
-        if char == -1 and score == -1:
+        if char == -1:
             log.error(f"{websocket.remote_address[0]} - Server internal error")
-            await call_result(websocket, "500", "", "", "An error occured.")
+            if score == -1:
+                log.error("ERROR TYPE :-: Torch Device Error.")
+            elif score == -2:
+                log.error("ERROR TYPE :-: Getdata Error.")
+            elif score == -3:
+                log.error("ERROR TYPE :-: Image Empty Error.")
+            elif score == -4:
+                log.error("ERROR TYPE :-: Load Dataset & Model Error.")
+            elif score == -5:
+                log.error("ERROR TYPE :-: Predict Result Error.")
+            elif score == -6:
+                log.error("ERROR TYPE :-: Convert Char Error.")
+            elif score == -7:
+                log.error("ERROR TYPE :-: Torch Grad Error & Break Out For Error.")
+            await call_result(websocket, "500", "", "", "An error occured in server.")
             await websocket.close()
         else:
             log.info(f"{websocket.remote_address[0]} - Result: char{char}, score{score}.")
@@ -116,7 +130,7 @@ if __name__ == "__main__":
             os.remove("image/" + i)
     else:
         os.mkdir("image")
-    # 哪来那么多异常，都是自找苦吃
+    # ***好多异常
     try:
         asyncio.run(main())
     except KeyboardInterrupt:

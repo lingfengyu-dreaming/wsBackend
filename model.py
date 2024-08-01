@@ -494,14 +494,17 @@ def test_model():
         else:
             device = 'cpu'
     except:
+        print("Torch Device Error.")
         return -1, -1
     try:
         img, label = getData(test_path)
     except:
-        return -1, -1
+        print("Getdata Error.")
+        return -1, -2
     # img = Image.open(img)
     if len(img) == 0:
-        return -1, -1
+        print("Image Empty Error.")
+        return -1, -3
     try:
         dataset = MyDataset(img, label)
         dataloader = DataLoader(dataset, batch_size)
@@ -512,7 +515,8 @@ def test_model():
         model.load_state_dict(torch.load(f'model/model.pt', map_location=torch.device(device), weights_only=False))
         model.eval()
     except:
-        return -1, -1
+        print("Load Dataset & Model Error.")
+        return -1, -4
     try:
         with torch.no_grad():
             for x, y in dataloader:
@@ -521,16 +525,19 @@ def test_model():
                 try:
                     pred = model(x)
                 except:
-                    return -1, -1
+                    print("Predict Result Error.")
+                    return -1, -5
                 try:
                     char = pred.argmax(1)
                     score = int(pred[0][char].item()) + 1
                     char = pick[char[0].item()]
                 except:
-                    return -1, -1
+                    print("Convert Char Error.")
+                    return -1, -6
                 return char, score
     except:
-        return -1, -1
+        print("Torch Grad & For Error.")
+        return -1, -7
 
 # if __name__ == '__main__':
 # epoch_input = int(input("请输入epoch"))
