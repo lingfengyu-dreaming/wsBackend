@@ -3,7 +3,7 @@
 Author Lingfengyu
 Date 2024-07-21 10:35
 LastEditors Lingfengyu
-LastEditTime 2024-08-02 14:27
+LastEditTime 2024-08-02 14:30
 Description 
 Feature 
 """
@@ -50,9 +50,11 @@ async def handler(websocket):
             except (binascii.Error, ValueError):
                 log.error(f"{websocket.remote_address[0]} - Image error.")
                 await call_result(websocket, "400", "", "", "Bad request.")
+                return
         else:
             log.error(f"{websocket.remote_address[0]} - Image missing.")
             await call_result(websocket, "400", "", "", "Bad request.")
+            return
         char, score = test_model()
         print(f"Char:{char}, Score:{score}")
         if char == -1:
