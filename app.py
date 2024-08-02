@@ -3,7 +3,7 @@
 Author Lingfengyu
 Date 2024-07-21 10:35
 LastEditors Lingfengyu
-LastEditTime 2024-08-02 14:37
+LastEditTime 2024-08-02 14:48
 Description 
 Feature 
 """
@@ -152,7 +152,7 @@ if __name__ == "__main__":
         log.warn(type(e).__name__)
         log.error("Websocket Connection Closed OK.")
         print("Remote connection close OK.")
-    except asyncio.exceptions.IncompleteReadError() as e:
+    except asyncio.IncompleteReadError() as e:
         log.warn(type(e).__name__)
         log.error("Connection closed without receiving or sending a close frame.")
         print("Connection closed without receiving or sending a close frame.")
