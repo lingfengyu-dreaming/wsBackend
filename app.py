@@ -3,7 +3,7 @@
 Author Lingfengyu
 Date 2024-07-21 10:35
 LastEditors Lingfengyu
-LastEditTime 2024-08-02 13:30
+LastEditTime 2024-08-02 14:18
 Description 
 Feature 
 """
@@ -41,11 +41,12 @@ async def handler(websocket):
     """
     async for message in websocket:
         rec = json.loads(message)
-        # log.info(f"{websocket.remote_address[0]} - Connection receive:{rec}")
+        log.debug(f"{websocket.remote_address[0]} - Connection receive:{rec}")
         if 'image' in rec and 'image' is not "":
             try:
                 with open("image/image.jpg", "wb") as image_file:
                     image_file.write(base64.b64decode(rec["image"]))
+                    log.debug(f"{websocket.remote_address[0]} - Image decode:{base64.b64decode(rec["image"])}")
             except (binascii.Error, ValueError):
                 log.error(f"{websocket.remote_address[0]} - Image error.")
                 await call_result(websocket, "400", "", "", "Bad request.")
@@ -116,9 +117,9 @@ if __name__ == "__main__":
         open("log/current.log", 'w', encoding="UTF-8")
     # 输出日志
     log = logging.getLogger("ws")
-    log.setLevel(logging.INFO)
+    log.setLevel(logging.DEBUG)
     file_handler = logging.FileHandler("log/current.log")
-    file_handler.setLevel(logging.INFO)
+    file_handler.setLevel(logging.DEBUG)
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)
     log.addHandler(file_handler)
@@ -152,7 +153,7 @@ if __name__ == "__main__":
         log.warn(type(e).__name__)
         log.error("Connection closed without receiving or sending a close frame.")
         print("Connection closed without receiving or sending a close frame.")
-    except json.decoder.JSONDecodeError() as e:
+    except json.JSONDecodeError() as e:
         log.warn(type(e).__name__)
         log.error("Decode JSON from received message error. May caused by Internal Error.")
         print("Decode JSON from received message error.")
