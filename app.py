@@ -3,7 +3,7 @@
 Author Lingfengyu
 Date 2024-07-21 10:35
 LastEditors Lingfengyu
-LastEditTime 2024-08-02 14:30
+LastEditTime 2024-08-02 14:37
 Description 
 Feature 
 """
@@ -40,6 +40,7 @@ async def handler(websocket):
     @param websocket 
     """
     async for message in websocket:
+        ERRTAG = True
         rec = json.loads(message)
         # log.debug(f"{websocket.remote_address[0]} - Connection receive:{rec}")
         if 'image' in rec and rec["image"] is not "":
@@ -50,33 +51,36 @@ async def handler(websocket):
             except (binascii.Error, ValueError):
                 log.error(f"{websocket.remote_address[0]} - Image error.")
                 await call_result(websocket, "400", "", "", "Bad request.")
-                return
+                ERRTAG = False
         else:
             log.error(f"{websocket.remote_address[0]} - Image missing.")
             await call_result(websocket, "400", "", "", "Bad request.")
-            return
-        char, score = test_model()
-        print(f"Char:{char}, Score:{score}")
-        if char == -1:
-            log.error(f"{websocket.remote_address[0]} - Server internal error")
-            if score == -1:
-                log.error("ERROR TYPE :-: Torch Device Error.")
-            elif score == -2:
-                log.error("ERROR TYPE :-: Getdata Error.")
-            elif score == -3:
-                log.error("ERROR TYPE :-: Image Empty Error.")
-            elif score == -4:
-                log.error("ERROR TYPE :-: Load Dataset & Model Error.")
-            elif score == -5:
-                log.error("ERROR TYPE :-: Predict Result Error.")
-            elif score == -6:
-                log.error("ERROR TYPE :-: Convert Char Error.")
-            elif score == -7:
-                log.error("ERROR TYPE :-: Torch Grad Error & Break Out For Error.")
-            await call_result(websocket, "500", "", "", "An error occured in server.")
+            ERRTAG = False
+        if ERRTAG:
+            char, score = test_model()
+            print(f"Char:{char}, Score:{score}")
+            if char == -1:
+                log.error(f"{websocket.remote_address[0]} - Server internal error")
+                if score == -1:
+                    log.error("ERROR TYPE :-: Torch Device Error.")
+                elif score == -2:
+                    log.error("ERROR TYPE :-: Getdata Error.")
+                elif score == -3:
+                    log.error("ERROR TYPE :-: Image Empty Error.")
+                elif score == -4:
+                    log.error("ERROR TYPE :-: Load Dataset & Model Error.")
+                elif score == -5:
+                    log.error("ERROR TYPE :-: Predict Result Error.")
+                elif score == -6:
+                    log.error("ERROR TYPE :-: Convert Char Error.")
+                elif score == -7:
+                    log.error("ERROR TYPE :-: Torch Grad Error & Break Out For Error.")
+                await call_result(websocket, "500", "", "", "An error occured in server.")
+            else:
+                log.info(f"{websocket.remote_address[0]} - Result: char{char}, score{score}.")
+                await call_result(websocket, "200", f"{char}", f"{score}", "OK.")
         else:
-            log.info(f"{websocket.remote_address[0]} - Result: char{char}, score{score}.")
-            await call_result(websocket, "200", f"{char}", f"{score}", "OK.")
+            ERRTAG = True
 
 async def echo(websocket):
     """
