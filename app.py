@@ -3,7 +3,7 @@
 Author Lingfengyu
 Date 2024-07-21 10:35
 LastEditors Lingfengyu
-LastEditTime 2024-08-02 14:18
+LastEditTime 2024-08-02 14:27
 Description 
 Feature 
 """
@@ -41,20 +41,18 @@ async def handler(websocket):
     """
     async for message in websocket:
         rec = json.loads(message)
-        log.debug(f"{websocket.remote_address[0]} - Connection receive:{rec}")
-        if 'image' in rec and 'image' is not "":
+        # log.debug(f"{websocket.remote_address[0]} - Connection receive:{rec}")
+        if 'image' in rec and rec["image"] is not "":
             try:
                 with open("image/image.jpg", "wb") as image_file:
                     image_file.write(base64.b64decode(rec["image"]))
-                    log.debug(f"{websocket.remote_address[0]} - Image decode:{base64.b64decode(rec["image"])}")
+                    # log.debug(f"{websocket.remote_address[0]} - Image decode:{base64.b64decode(rec["image"])}")
             except (binascii.Error, ValueError):
                 log.error(f"{websocket.remote_address[0]} - Image error.")
                 await call_result(websocket, "400", "", "", "Bad request.")
-                await websocket.close()
         else:
             log.error(f"{websocket.remote_address[0]} - Image missing.")
             await call_result(websocket, "400", "", "", "Bad request.")
-            await websocket.close()
         char, score = test_model()
         print(f"Char:{char}, Score:{score}")
         if char == -1:
@@ -74,7 +72,6 @@ async def handler(websocket):
             elif score == -7:
                 log.error("ERROR TYPE :-: Torch Grad Error & Break Out For Error.")
             await call_result(websocket, "500", "", "", "An error occured in server.")
-            await websocket.close()
         else:
             log.info(f"{websocket.remote_address[0]} - Result: char{char}, score{score}.")
             await call_result(websocket, "200", f"{char}", f"{score}", "OK.")
