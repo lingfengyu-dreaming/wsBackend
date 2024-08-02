@@ -3,7 +3,7 @@
 Author Lingfengyu
 Date 2024-07-21 10:35
 LastEditors Lingfengyu
-LastEditTime 2024-08-02 14:48
+LastEditTime 2024-08-02 17:53
 Description 
 Feature 
 """
@@ -120,9 +120,9 @@ if __name__ == "__main__":
         open("log/current.log", 'w', encoding="UTF-8")
     # 输出日志
     log = logging.getLogger("ws")
-    log.setLevel(logging.DEBUG)
+    log.setLevel(logging.INFO)
     file_handler = logging.FileHandler("log/current.log")
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(logging.INFO)
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)
     log.addHandler(file_handler)
